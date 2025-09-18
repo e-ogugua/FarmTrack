@@ -21,7 +21,7 @@ export function useSales() {
     
     try {
       setIsLoading(true);
-      const data = await getSales('sales');
+      const data = await getSales<Sale>('sales');
       setSales(data);
       setError(null);
     } catch (err) {
@@ -80,7 +80,10 @@ export function useSales() {
         }
       }
       
-      await updateSale('sales', id, updatedData);
+      await updateSale<Sale>('sales', { 
+        ...updatedData, 
+        id: id as string 
+      } as Sale);
       await loadSales(); // Refresh the list
     } catch (err) {
       console.error('Failed to update sale:', err);
@@ -108,8 +111,8 @@ export function useSales() {
     if (!isInitialized) return [];
     
     try {
-      const allSales = await getSales('sales');
-      return allSales.filter(sale => {
+      const allSales = await getSales<Sale>('sales');
+      return allSales.filter((sale: Sale) => {
         const saleDate = new Date(sale.date);
         return saleDate >= startDate && saleDate <= endDate;
       });
@@ -124,8 +127,8 @@ export function useSales() {
     if (!isInitialized) return [];
     
     try {
-      const allSales = await getSales('sales');
-      return allSales.filter(sale => sale.product === product);
+      const allSales = await getSales<Sale>('sales');
+      return allSales.filter((sale: Sale) => sale.product === product);
     } catch (err) {
       console.error(`Failed to get sales for product ${product}:`, err);
       return [];
@@ -133,7 +136,7 @@ export function useSales() {
   }, [isInitialized, getSales]);
 
   // Get total sales amount
-  const getTotalSales = useCallback(async (salesData?: Sale[]) => {
+  const getTotalSales = useCallback((salesData?: Sale[]): number => {
     const dataToUse = salesData || sales;
     if (!dataToUse || dataToUse.length === 0) return 0;
     return dataToUse.reduce((sum, sale) => sum + (sale.total || 0), 0);
@@ -144,10 +147,10 @@ export function useSales() {
     if (!isInitialized) return [];
     
     try {
-      const allSales = await getSales('sales');
+      const allSales = await getSales<Sale>('sales');
       const summary = new Map<string, { product: string; totalQuantity: number; totalRevenue: number }>();
       
-      allSales.forEach(sale => {
+      allSales.forEach((sale: Sale) => {
         const existing = summary.get(sale.product) || { 
           product: sale.product, 
           totalQuantity: 0, 
@@ -156,7 +159,7 @@ export function useSales() {
         
         summary.set(sale.product, {
           product: sale.product,
-          totalQuantity: existing.totalQuantity + sale.quantity,
+          totalQuantity: existing.totalQuantity + (sale.quantity || 0),
           totalRevenue: existing.totalRevenue + (sale.total || 0)
         });
       });

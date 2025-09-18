@@ -80,7 +80,9 @@ export default function ActivitiesPage() {
       <div className="flex justify-between items-center">
         <div>
           <h1 className="text-3xl font-bold">Farm Activities</h1>
-          <p className="text-muted-foreground">Track and manage your farm activities</p>
+          <p className="text-sm text-muted-foreground">
+            Track and manage all your farm activities in one place. Click &quot;Add Activity&quot; to get started.
+          </p>
         </div>
         <Button onClick={() => setIsFormOpen(true)}>
           <Plus className="mr-2 h-4 w-4" /> Add Activity
@@ -183,7 +185,7 @@ export default function ActivitiesPage() {
             <CardContent className="pt-6 text-center text-muted-foreground">
               <Activity className="mx-auto h-12 w-12 text-gray-300 mb-2" />
               <p>No activities recorded yet.</p>
-              <p className="text-sm">Click the "Add Activity" button to get started.</p>
+              <p className="text-sm">Click the &quot;Add Activity&quot; button to get started.</p>
             </CardContent>
           </Card>
         ) : (

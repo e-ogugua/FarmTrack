@@ -22,14 +22,25 @@ export default function Dashboard() {
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    // Load data from localStorage
-    const sales = storage.get('sales', []);
-    const expenses = storage.get('expenses', []);
-    const inventory = storage.get('inventory', []);
+    // Define interfaces for our data
+    interface Sale {
+      total: number;
+      // Add other sale properties as needed
+    }
 
-    // Calculate totals
-    const totalSales = sales.reduce((sum: number, sale: any) => sum + (sale.total || 0), 0);
-    const totalExpenses = expenses.reduce((sum: number, expense: any) => sum + (expense.amount || 0), 0);
+    interface Expense {
+      amount: number;
+      // Add other expense properties as needed
+    }
+
+    // Load data from localStorage with proper types
+    const sales = storage.get<Sale[]>('sales', []);
+    const expenses = storage.get<Expense[]>('expenses', []);
+    const inventory = storage.get<unknown[]>('inventory', []);
+
+    // Calculate totals with proper types
+    const totalSales = sales.reduce((sum: number, sale: Sale) => sum + (sale?.total || 0), 0);
+    const totalExpenses = expenses.reduce((sum: number, expense: Expense) => sum + (expense?.amount || 0), 0);
     const profit = totalSales - totalExpenses;
     const inventoryItems = inventory.length;
 

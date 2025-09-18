@@ -1,323 +1,202 @@
-import { useState, useCallback } from 'react';
-import { toast } from '@/components/ui/use-toast';
+import { useCallback, useState, useEffect } from 'react';
+
+// Check if we're in a browser environment
+const isBrowser = typeof window !== 'undefined' && typeof window.indexedDB !== 'undefined';
 
 type StoreName = 'activities' | 'inventory' | 'sales' | 'expenses' | 'labour';
 
-interface IndexedDBConfig {
-  name: string;
-  version: number;
-  objectStores: Array<{
-    name: StoreName;
-    keyPath: string;
-    autoIncrement?: boolean;
-    indices?: Array<{
-      name: string;
-      keyPath: string | string[];
-      options?: IDBIndexParameters;
-    }>;
-  }>;
-}
-
 interface UseIndexedDBReturn {
   db: IDBDatabase | null;
-  initDB: (config: IndexedDBConfig) => Promise<IDBDatabase>;
-  add: <T>(storeName: StoreName, item: T) => Promise<IDBValidKey>;
-  get: <T>(storeName: StoreName, id: IDBValidKey) => Promise<T | undefined>;
-  getAll: <T>(
-    storeName: StoreName,
-    query?: IDBValidKey | IDBKeyRange,
-    indexName?: string
-  ) => Promise<T[]>;
+  isInitialized: boolean;
+  error: Error | null;
+  add: <T>(storeName: StoreName, item: Omit<T, 'id'>) => Promise<IDBValidKey>;
+  get: <T>(storeName: StoreName, key: IDBValidKey) => Promise<T | undefined>;
+  getAll: <T>(storeName: StoreName) => Promise<T[]>;
   update: <T extends { id: IDBValidKey }>(
     storeName: StoreName,
     item: T
-  ) => Promise<IDBValidKey>;
-  remove: (storeName: StoreName, id: IDBValidKey) => Promise<void>;
+  ) => Promise<void>;
+  remove: (storeName: StoreName, key: IDBValidKey) => Promise<void>;
   clear: (storeName: StoreName) => Promise<void>;
-  createCursorPagination: <T>(
-    storeName: StoreName,
-    indexName: string,
-    query: IDBValidKey | IDBKeyRange,
-    pageSize: number
-  ) => {
-    next: () => Promise<T[]>;
-    prev: () => Promise<T[]>;
-    hasNext: boolean;
-    hasPrev: boolean;
-  };
 }
 
+// Default error handler
+const defaultErrorHandler = (error: unknown) => {
+  console.error('IndexedDB error:', error);
+};
+
 export function useIndexedDB({
-  name,
-  onError,
+  name = 'farmtrack-db',
+  onError = defaultErrorHandler,
+  version = 1,
 }: {
-  name: string;
-  onError: (error: unknown) => void;
-}): UseIndexedDBReturn {
+  name?: string;
+  onError?: (error: unknown) => void;
+  version?: number;
+} = {}): UseIndexedDBReturn {
   const [db, setDb] = useState<IDBDatabase | null>(null);
+  const [isInitialized, setIsInitialized] = useState(false);
+  const [error, setError] = useState<Error | null>(null);
 
-  const initDB = useCallback(
-    async (config: IndexedDBConfig): Promise<IDBDatabase> => {
-      return new Promise((resolve, reject) => {
-        const request = indexedDB.open(config.name, config.version);
-
-        request.onerror = () => {
-          const error = request.error || new Error('Failed to open database');
-          onError(error);
-          reject(error);
-        };
-
-        request.onsuccess = () => {
-          const database = request.result;
-          setDb(database);
-          resolve(database);
-        };
-
-        request.onupgradeneeded = (event) => {
-          const database = (event.target as IDBOpenDBRequest).result;
-
-          // Create object stores and indexes
-          config.objectStores.forEach((storeConfig) => {
-            if (!database.objectStoreNames.contains(storeConfig.name)) {
-              const store = database.createObjectStore(storeConfig.name, {
-                keyPath: storeConfig.keyPath,
-                autoIncrement: storeConfig.autoIncrement,
-              });
-
-              // Create indexes
-              storeConfig.indices?.forEach((indexConfig) => {
-                store.createIndex(indexConfig.name, indexConfig.keyPath, indexConfig.options);
-              });
-            }
-          });
-        };
-      });
+  // Handle errors consistently
+  const handleError = useCallback(
+    (err: unknown) => {
+      const error = err instanceof Error ? err : new Error(String(err));
+      setError(error);
+      onError(error);
     },
     [onError]
   );
 
-  const add = useCallback(
-    async <T,>(storeName: StoreName, item: T): Promise<IDBValidKey> => {
-      if (!db) throw new Error('Database not initialized');
+  // Initialize IndexedDB only on the client side
+  useEffect(() => {
+    if (!isBrowser) {
+      return () => {}; // Return empty cleanup function for SSR
+    }
 
-      return new Promise((resolve, reject) => {
-        const transaction = db.transaction(storeName, 'readwrite');
-        const store = transaction.objectStore(storeName);
-        const request = store.add(item);
-
-        request.onsuccess = () => resolve(request.result as IDBValidKey);
-        request.onerror = () => {
-          const error = request.error || new Error('Failed to add item');
-          onError(error);
-          reject(error);
-        };
-      });
-    },
-    [db, onError]
-  );
-
-  const get = useCallback(
-    async <T,>(storeName: StoreName, id: IDBValidKey): Promise<T | undefined> => {
-      if (!db) throw new Error('Database not initialized');
-
-      return new Promise((resolve, reject) => {
-        const transaction = db.transaction(storeName, 'readonly');
-        const store = transaction.objectStore(storeName);
-        const request = store.get(id);
-
-        request.onsuccess = () => resolve(request.result);
-        request.onerror = () => {
-          const error = request.error || new Error('Failed to get item');
-          onError(error);
-          reject(error);
-        };
-      });
-    },
-    [db, onError]
-  );
-
-  const getAll = useCallback(
-    async <T,>(
-      storeName: StoreName,
-      query?: IDBValidKey | IDBKeyRange,
-      indexName?: string
-    ): Promise<T[]> => {
-      if (!db) throw new Error('Database not initialized');
-
-      return new Promise((resolve, reject) => {
-        const transaction = db.transaction(storeName, 'readonly');
-        const store = transaction.objectStore(storeName);
+    let isMounted = true;
+    
+    const initDB = () => {
+      try {
+        const request = indexedDB.open(name, version);
         
-        let request: IDBRequest<T[]>;
+        request.onerror = (event) => {
+          const target = event.target as IDBOpenDBRequest;
+          if (isMounted) handleError(target.error);
+        };
         
-        if (indexName) {
-          const index = store.index(indexName);
-          request = index.getAll(query);
-        } else if (query !== undefined) {
-          request = store.getAll(query);
-        } else {
-          request = store.getAll();
-        }
-
-        request.onsuccess = () => resolve(request.result || []);
-        request.onerror = () => {
-          const error = request.error || new Error('Failed to get all items');
-          onError(error);
-          reject(error);
+        request.onsuccess = () => {
+          if (isMounted) {
+            const db = request.result;
+            setDb(db);
+            setIsInitialized(true);
+          }
         };
-      });
-    },
-    [db, onError]
-  );
-
-  const update = useCallback(
-    async <T extends { id: IDBValidKey }>(
-      storeName: StoreName,
-      item: T
-    ): Promise<IDBValidKey> => {
-      if (!db) throw new Error('Database not initialized');
-
-      return new Promise((resolve, reject) => {
-        const transaction = db.transaction(storeName, 'readwrite');
-        const store = transaction.objectStore(storeName);
-        const request = store.put(item);
-
-        request.onsuccess = () => resolve(request.result as IDBValidKey);
-        request.onerror = () => {
-          const error = request.error || new Error('Failed to update item');
-          onError(error);
-          reject(error);
-        };
-      });
-    },
-    [db, onError]
-  );
-
-  const remove = useCallback(
-    async (storeName: StoreName, id: IDBValidKey): Promise<void> => {
-      if (!db) throw new Error('Database not initialized');
-
-      return new Promise((resolve, reject) => {
-        const transaction = db.transaction(storeName, 'readwrite');
-        const store = transaction.objectStore(storeName);
-        const request = store.delete(id);
-
-        request.onsuccess = () => resolve();
-        request.onerror = () => {
-          const error = request.error || new Error('Failed to delete item');
-          onError(error);
-          reject(error);
-        };
-      });
-    },
-    [db, onError]
-  );
-
-  const clear = useCallback(
-    async (storeName: StoreName): Promise<void> => {
-      if (!db) throw new Error('Database not initialized');
-
-      return new Promise((resolve, reject) => {
-        const transaction = db.transaction(storeName, 'readwrite');
-        const store = transaction.objectStore(storeName);
-        const request = store.clear();
-
-        request.onsuccess = () => resolve();
-        request.onerror = () => {
-          const error = request.error || new Error('Failed to clear store');
-          onError(error);
-          reject(error);
-        };
-      });
-    },
-    [db, onError]
-  );
-
-  const createCursorPagination = useCallback(
-    <T,>(
-      storeName: StoreName,
-      indexName: string,
-      query: IDBValidKey | IDBKeyRange,
-      pageSize: number
-    ) => {
-      if (!db) throw new Error('Database not initialized');
-
-      let cursor: IDBCursorWithValue | null = null;
-      let hasMore = true;
-      let isReversed = false;
-      const keys: IDBValidKey[] = [];
-
-      const getNextPage = async (): Promise<T[]> => {
-        return new Promise((resolve, reject) => {
-          const transaction = db.transaction(storeName, 'readonly');
-          const store = transaction.objectStore(storeName);
-          const index = store.index(indexName);
-          const request = index.openCursor(query);
-          const results: T[] = [];
-          let advanced = false;
-
-          request.onsuccess = (event) => {
-            const cursor = (event.target as IDBRequest<IDBCursorWithValue | null>).result;
-            if (!cursor) {
-              hasMore = false;
-              resolve(results);
-              return;
+        
+        request.onupgradeneeded = (event) => {
+          const db = (event.target as IDBOpenDBRequest).result;
+          // Create object stores if they don't exist
+          const storeNames: StoreName[] = ['activities', 'inventory', 'sales', 'expenses', 'labour'];
+          storeNames.forEach(storeName => {
+            if (!db.objectStoreNames.contains(storeName)) {
+              db.createObjectStore(storeName, { keyPath: 'id', autoIncrement: true });
             }
-
-            if (!advanced) {
-              if (isReversed && cursor.key) {
-                cursor.advance(-pageSize);
-                advanced = true;
-                return;
-              }
-              advanced = true;
-            }
-
-            results.push(cursor.value);
-            keys.push(cursor.primaryKey);
-
-            if (results.length >= pageSize) {
-              cursor.continue();
-            } else {
-              cursor.continue();
-            }
-          };
-
-          request.onerror = () => {
-            const error = request.error || new Error('Failed to fetch next page');
-            onError(error);
-            reject(error);
-          };
-        });
-      };
-
-      const getPreviousPage = async (): Promise<T[]> => {
-        isReversed = true;
-        return getNextPage();
-      };
-
-      return {
-        next: getNextPage,
-        prev: getPreviousPage,
-        get hasNext() {
-          return hasMore;
-        },
-        get hasPrev() {
-          return keys.length > 0;
-        },
-      };
-    },
-    [db, onError]
-  );
-
+          });
+        };
+      } catch (err) {
+        if (isMounted) handleError(err);
+      }
+    };
+    
+    initDB();
+    
+    return () => {
+      isMounted = false;
+      if (db) {
+        db.close();
+      }
+    };
+  }, [name, version, handleError, db]);
+  
+  // Add operation
+  const add = useCallback(async <T,>(storeName: StoreName, item: Omit<T, 'id'>): Promise<IDBValidKey> => {
+    if (!isBrowser || !db) throw new Error('IndexedDB not available');
+    
+    return new Promise((resolve, reject) => {
+      const transaction = db.transaction(storeName, 'readwrite');
+      const store = transaction.objectStore(storeName);
+      const request = store.add({ ...item, createdAt: new Date().toISOString() });
+      
+      request.onsuccess = () => resolve(request.result as IDBValidKey);
+      request.onerror = () => reject(request.error);
+    });
+  }, [db]);
+  
+  // Get operation
+  const get = useCallback(async <T,>(storeName: StoreName, key: IDBValidKey): Promise<T | undefined> => {
+    if (!isBrowser || !db) throw new Error('IndexedDB not available');
+    
+    return new Promise((resolve, reject) => {
+      const transaction = db.transaction(storeName, 'readonly');
+      const store = transaction.objectStore(storeName);
+      const request = store.get(key);
+      
+      request.onsuccess = () => resolve(request.result as T);
+      request.onerror = () => reject(request.error);
+    });
+  }, [db]);
+  
+  // Get All operation
+  const getAll = useCallback(async <T,>(storeName: StoreName): Promise<T[]> => {
+    if (!isBrowser || !db) throw new Error('IndexedDB not available');
+    
+    return new Promise((resolve, reject) => {
+      const transaction = db.transaction(storeName, 'readonly');
+      const store = transaction.objectStore(storeName);
+      const request = store.getAll();
+      
+      request.onsuccess = () => resolve(request.result as T[]);
+      request.onerror = () => reject(request.error);
+    });
+  }, [db]);
+  
+  // Update operation
+  const update = useCallback(async <T extends { id: IDBValidKey }>(
+    storeName: StoreName,
+    item: T
+  ): Promise<void> => {
+    if (!isBrowser || !db) throw new Error('IndexedDB not available');
+    
+    return new Promise((resolve, reject) => {
+      const transaction = db.transaction(storeName, 'readwrite');
+      const store = transaction.objectStore(storeName);
+      const request = store.put({
+        ...item,
+        updatedAt: new Date().toISOString()
+      });
+      
+      request.onsuccess = () => resolve();
+      request.onerror = () => reject(request.error);
+    });
+  }, [db]);
+  
+  // Remove operation
+  const remove = useCallback(async (storeName: StoreName, key: IDBValidKey): Promise<void> => {
+    if (!isBrowser || !db) throw new Error('IndexedDB not available');
+    
+    return new Promise((resolve, reject) => {
+      const transaction = db.transaction(storeName, 'readwrite');
+      const store = transaction.objectStore(storeName);
+      const request = store.delete(key);
+      
+      request.onsuccess = () => resolve();
+      request.onerror = () => reject(request.error);
+    });
+  }, [db]);
+  
+  // Clear operation
+  const clear = useCallback(async (storeName: StoreName): Promise<void> => {
+    if (!isBrowser || !db) throw new Error('IndexedDB not available');
+    
+    return new Promise((resolve, reject) => {
+      const transaction = db.transaction(storeName, 'readwrite');
+      const store = transaction.objectStore(storeName);
+      const request = store.clear();
+      
+      request.onsuccess = () => resolve();
+      request.onerror = () => reject(request.error);
+    });
+  }, [db]);
+  
   return {
     db,
-    initDB,
+    isInitialized,
+    error,
     add,
     get,
     getAll,
     update,
     remove,
     clear,
-    createCursorPagination,
   };
+}

@@ -1,13 +1,12 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { Plus, Users, User, Clock, Calendar, DollarSign, Search, Trash2, Edit } from 'lucide-react';
+import { Plus, Search, Trash2, Edit, Check } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { formatDate } from '@/lib/date-utils';
 import { storage } from '@/lib/utils/storage';
 
@@ -78,21 +77,12 @@ export default function LabourPage() {
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
     const { name, value } = e.target;
     
-    setFormData(prev => {
-      const updated = {
-        ...prev,
-        [name]: name === 'hoursWorked' || name === 'hourlyRate' 
-          ? parseFloat(value) || 0 
-          : value
-      };
-      
-      // Recalculate total pay when hours or rate changes
-      if ((name === 'hoursWorked' || name === 'hourlyRate') && !isNaN(updated.hoursWorked) && !isNaN(updated.hourlyRate)) {
-        updated.totalPay = updated.hoursWorked * updated.hourlyRate;
-      }
-      
-      return updated;
-    });
+    setFormData(prev => ({
+      ...prev,
+      [name]: name === 'hoursWorked' || name === 'hourlyRate' 
+        ? parseFloat(value) || 0 
+        : value
+    }));
   };
 
   const handleSelectChange = (name: string, value: string) => {
@@ -110,18 +100,29 @@ export default function LabourPage() {
     
     if (editingId) {
       // Update existing record
-      const updatedRecords = labourRecords.map(record => 
-        record.id === editingId 
-          ? { 
-              ...formData, 
-              id: editingId, 
-              totalPay,
-              updatedAt: now 
-            }
-          : record
-      );
-      setLabourRecords(updatedRecords);
-      storage.set('labour', updatedRecords);
+      const updatedRecords = labourRecords.map(record => {
+        if (record.id === editingId) {
+          return {
+            ...formData,
+            id: editingId,
+            totalPay,
+            updatedAt: now,
+            createdAt: record.createdAt, // Preserve the original createdAt
+            paymentDate: formData.status === 'paid' ? now.split('T')[0] : record.paymentDate
+          };
+        }
+        return record;
+      });
+      
+      // Ensure all records have the required createdAt field
+      const updatedRecordsWithTimestamps = updatedRecords.map(record => ({
+        ...record,
+        totalPay: record.hoursWorked * record.hourlyRate,
+        createdAt: record.createdAt || new Date().toISOString()
+      }));
+      
+      setLabourRecords(updatedRecordsWithTimestamps);
+      storage.set('labour', updatedRecordsWithTimestamps);
       setEditingId(null);
     } else {
       // Add new record
@@ -134,8 +135,16 @@ export default function LabourPage() {
       };
       
       const updatedRecords = [...labourRecords, newRecord];
-      setLabourRecords(updatedRecords);
-      storage.set('labour', updatedRecords);
+      
+      // Ensure all records have the required createdAt field
+      const updatedRecordsWithTimestamps = updatedRecords.map(record => ({
+        ...record,
+        totalPay: record.hoursWorked * record.hourlyRate,
+        createdAt: record.createdAt || new Date().toISOString()
+      }));
+      
+      setLabourRecords(updatedRecordsWithTimestamps);
+      storage.set('labour', updatedRecordsWithTimestamps);
     }
     
     // Reset form

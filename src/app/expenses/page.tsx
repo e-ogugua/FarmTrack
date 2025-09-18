@@ -1,13 +1,13 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { Plus, DollarSign, Tag, Calendar, Check, X, Search } from 'lucide-react';
+import { Plus, Search, Check } from 'lucide-react';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { formatDate } from '@/lib/date-utils';
 import { storage } from '@/lib/utils/storage';
 
@@ -27,6 +27,8 @@ export default function ExpensesPage() {
   const [isFormOpen, setIsFormOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
+  // Remove unused state
+  // const [category, setCategory] = useState<string>('');
   
   const [formData, setFormData] = useState<Omit<Expense, 'id' | 'createdAt'>>({ 
     date: new Date().toISOString().split('T')[0],
@@ -74,6 +76,14 @@ export default function ExpensesPage() {
       [name]: name === 'amount' ? parseFloat(value) || 0 : value
     }));
   };
+
+  // Remove unused handler
+  // const handleCategoryChange = (value: string) => {
+  //   setFormData(prev => ({
+  //     ...prev,
+  //     category: value
+  //   }));
+  // };
 
   const handleSelectChange = (name: string, value: string) => {
     setFormData(prev => ({

@@ -2,18 +2,31 @@ import { useState, useEffect, useCallback } from 'react';
 import { useDatabase } from '@/contexts/DatabaseContext';
 import { InventoryItem } from '@/types';
 
+const STORE_NAME = 'inventory' as const;
+
 export function useInventory() {
   const { 
     isInitialized, 
-    addInventoryItem, 
-    getInventoryItems, 
-    updateInventoryItem, 
-    deleteInventoryItem 
+    add,
+    getAll,
+    update,
+    remove
   } = useDatabase();
   
   const [inventory, setInventory] = useState<InventoryItem[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<Error | null>(null);
+
+  // Get all inventory items
+  const getInventoryItems = useCallback(async (): Promise<InventoryItem[]> => {
+    if (!isInitialized) return [];
+    try {
+      return await getAll<InventoryItem>(STORE_NAME);
+    } catch (err) {
+      console.error('Failed to get inventory items:', err);
+      throw err;
+    }
+  }, [isInitialized, getAll]);
 
   // Load inventory from the database
   const loadInventory = useCallback(async () => {
@@ -51,7 +64,7 @@ export function useInventory() {
         updatedAt: now,
       };
       
-      const id = await addInventoryItem(newItem);
+      const id = await add<InventoryItem>(STORE_NAME, newItem);
       await loadInventory(); // Refresh the list
       return id;
     } catch (err) {
@@ -61,24 +74,34 @@ export function useInventory() {
   };
 
   // Update an existing inventory item
-  const updateExistingItem = useCallback(async (id: IDBValidKey, updates: Partial<Omit<InventoryItem, 'id' | 'lastUpdated'>>) => {
+  const updateExistingItem = useCallback(async (id: IDBValidKey, updates: Partial<Omit<InventoryItem, 'id' | 'createdAt'>>) => {
     if (!isInitialized) {
       throw new Error('Database not initialized');
     }
 
     try {
-      const updateData = {
+      // First get the existing item
+      const allItems = await getInventoryItems();
+      const existingItem = allItems.find(item => item.id === id);
+      
+      if (!existingItem) {
+        throw new Error('Inventory item not found');
+      }
+      
+      // Merge updates with existing item
+      const updatedItem = {
+        ...existingItem,
         ...updates,
-        lastUpdated: new Date().toISOString(),
+        updatedAt: new Date().toISOString(),
       };
       
-      await updateInventoryItem(id, updateData);
+      await update<InventoryItem>(STORE_NAME, updatedItem);
       await loadInventory(); // Refresh the list
     } catch (err) {
       console.error('Failed to update inventory item:', err);
       throw err;
     }
-  }, [isInitialized, updateInventoryItem, loadInventory]);
+  }, [isInitialized, getInventoryItems, update, loadInventory]);
 
   // Delete an inventory item
   const removeInventoryItem = async (id: IDBValidKey) => {
@@ -87,7 +110,7 @@ export function useInventory() {
     }
 
     try {
-      await deleteInventoryItem(id);
+      await remove(STORE_NAME, id);
       await loadInventory(); // Refresh the list
     } catch (err) {
       console.error('Failed to delete inventory item:', err);

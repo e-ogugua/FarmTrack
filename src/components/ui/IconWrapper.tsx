@@ -1,4 +1,3 @@
-import { LucideIcon } from 'lucide-react';
 import { ComponentType } from 'react';
 
 interface IconWrapperProps {

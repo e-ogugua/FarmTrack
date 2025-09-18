@@ -142,7 +142,7 @@ export default function ExpensesPage() {
       <div className="flex justify-between items-center">
         <div>
           <h1 className="text-2xl font-bold">Expenses</h1>
-          <p className="text-muted-foreground">Track your farm's expenses</p>
+          <p className="text-muted-foreground">Track your farm&apos;s expenses</p>
         </div>
         <Button onClick={() => setIsFormOpen(true)}>
           <Plus className="mr-2 h-4 w-4" />

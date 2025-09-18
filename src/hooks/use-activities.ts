@@ -2,18 +2,31 @@ import { useState, useEffect, useCallback } from 'react';
 import { useDatabase } from '@/contexts/DatabaseContext';
 import { Activity } from '@/types';
 
+const STORE_NAME = 'activities' as const;
+
 export function useActivities() {
   const { 
     isInitialized, 
-    addActivity, 
-    getActivities, 
-    updateActivity, 
-    deleteActivity 
+    add,
+    getAll,
+    update,
+    remove
   } = useDatabase();
   
   const [activities, setActivities] = useState<Activity[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<Error | null>(null);
+
+  // Get all activities
+  const getActivities = useCallback(async (): Promise<Activity[]> => {
+    if (!isInitialized) return [];
+    try {
+      return await getAll<Activity>(STORE_NAME);
+    } catch (err) {
+      console.error('Failed to get activities:', err);
+      throw err;
+    }
+  }, [isInitialized, getAll]);
 
   // Load activities from the database
   const loadActivities = useCallback(async () => {
@@ -51,7 +64,7 @@ export function useActivities() {
         updatedAt: now,
       };
       
-      const id = await addActivity(newActivity);
+      const id = await add<Activity>(STORE_NAME, newActivity);
       await loadActivities(); // Refresh the list
       return id;
     } catch (err) {
@@ -67,13 +80,28 @@ export function useActivities() {
     }
 
     try {
-      await updateActivity(id, updates);
+      // First get the existing activity
+      const allActivities = await getActivities();
+      const existingActivity = allActivities.find(a => a.id === id);
+      
+      if (!existingActivity) {
+        throw new Error('Activity not found');
+      }
+      
+      // Merge updates with existing activity
+      const updatedActivity = {
+        ...existingActivity,
+        ...updates,
+        updatedAt: new Date().toISOString(),
+      };
+      
+      await update<Activity>(STORE_NAME, updatedActivity);
       await loadActivities(); // Refresh the list
     } catch (err) {
       console.error('Failed to update activity:', err);
       throw err;
     }
-  }, [isInitialized, updateActivity, loadActivities]);
+  }, [isInitialized, getActivities, update, loadActivities]);
 
   // Delete an activity
   const removeActivity = useCallback(async (id: IDBValidKey) => {
@@ -82,13 +110,13 @@ export function useActivities() {
     }
 
     try {
-      await deleteActivity(id);
+      await remove(STORE_NAME, id);
       await loadActivities(); // Refresh the list
     } catch (err) {
       console.error('Failed to delete activity:', err);
       throw err;
     }
-  }, [isInitialized, deleteActivity, loadActivities]);
+  }, [isInitialized, remove, loadActivities]);
 
   // Get activities filtered by date range
   const getActivitiesByDateRange = useCallback(async (startDate: Date, endDate: Date) => {
@@ -139,6 +167,7 @@ export function useActivities() {
     addActivity: addNewActivity,
     updateActivity: updateExistingActivity,
     deleteActivity: removeActivity,
+    getActivities,
     getActivitiesByDateRange,
     getActivitiesByType,
     getActivitiesByCrop,

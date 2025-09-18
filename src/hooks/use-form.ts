@@ -16,7 +16,9 @@ interface UseFormOptions<T> {
   onSubmit: (values: T) => Promise<void> | void;
 }
 
-export function useForm<T extends Record<string, any>>({
+type FormValue = string | number | boolean | null | undefined;
+
+export function useForm<T extends Record<string, FormValue>>({
   initialValues,
   validationRules = {},
   onSubmit,
@@ -40,16 +42,18 @@ export function useForm<T extends Record<string, any>>({
         }
       }
 
-      // Clear error if validation passes
-      setErrors((prev) => {
-        const newErrors = { ...prev };
-        delete newErrors[name];
-        return newErrors;
-      });
+      // Clear error when user types
+      if (errors[name]) {
+        setErrors((prev) => {
+          const newErrors = { ...prev };
+          delete newErrors[name];
+          return newErrors;
+        });
+      }
 
       return true;
     },
-    [validationRules, values]
+    [validationRules, values, errors]
   );
 
   const validateForm = useCallback((): boolean => {
@@ -74,23 +78,22 @@ export function useForm<T extends Record<string, any>>({
   }, [validationRules, values]);
 
   const handleChange = useCallback(
-    (name: keyof T) => (
-      e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>
-    ) => {
-      const { value, type, checked } = e.target as HTMLInputElement;
-      const newValue = type === 'checkbox' ? checked : value;
-
+    <K extends keyof T>(name: K, value: T[K]) => {
       setValues((prev) => ({
         ...prev,
-        [name]: newValue,
+        [name]: value,
       }));
 
-      // Validate field on change if there's an error
+      // Clear error when user types
       if (errors[name]) {
-        validateField(name, newValue);
+        setErrors((prev) => {
+          const newErrors = { ...prev };
+          delete newErrors[name];
+          return newErrors;
+        });
       }
     },
-    [errors, validateField]
+    [errors]
   );
 
   const setFieldValue = useCallback(
@@ -157,60 +160,63 @@ export function useForm<T extends Record<string, any>>({
 }
 
 // Helper function to create validation rules
-export const createValidationRules = <T extends Record<string, any>>(
+export const createValidationRules = <T extends Record<string, FormValue>>(
   rules: ValidationRules<T>
 ) => rules;
 
 // Common validation rules
-export const required = <T,>(
+export function required<T extends Record<string, FormValue>>(
   message = 'This field is required'
-): ValidationRule<T> => ({
-  validator: (value) => {
-    if (typeof value === 'string') {
-      return value.trim() !== '';
-    }
-    if (typeof value === 'number') {
-      return !isNaN(value);
-    }
-    return value !== undefined && value !== null;
-  },
-  message,
-});
+): ValidationRule<T> {
+  return {
+    validator: (value: T[keyof T]) => {
+      if (value === undefined || value === null) return false;
+      if (typeof value === 'string') return value.trim() !== '';
+      if (Array.isArray(value)) return value.length > 0;
+      if (typeof value === 'number') return true;
+      if (typeof value === 'boolean') return true;
+      return false;
+    },
+    message,
+  };
+}
 
-export const minLength = <T,>(
+export const minLength = <T extends Record<string, FormValue>>(
   min: number,
   message = `Must be at least ${min} characters`
 ): ValidationRule<T> => ({
-  validator: (value) => {
+  validator: (value: T[keyof T]) => {
     return value === undefined || value === null || String(value).length >= min;
   },
   message,
 });
 
-export const maxLength = <T,>(
+export const maxLength = <T extends Record<string, FormValue>>(
   max: number,
   message = `Must be at most ${max} characters`
 ): ValidationRule<T> => ({
-  validator: (value) => {
+  validator: (value: T[keyof T]) => {
     return value === undefined || value === null || String(value).length <= max;
   },
   message,
 });
 
-export const email = <T,>(message = 'Must be a valid email'): ValidationRule<T> => ({
-  validator: (value) => {
-    if (!value) return true; // Skip validation if empty (use required() for that)
+export const email = <T extends Record<string, FormValue>>(
+  message = 'Must be a valid email'
+): ValidationRule<T> => ({
+  validator: (value: T[keyof T]) => {
+    if (value === undefined || value === null || value === '') return true;
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     return emailRegex.test(String(value));
   },
   message,
 });
 
-export const matchField = <T,>(
+export const matchField = <T extends Record<string, FormValue>>(
   fieldName: keyof T,
   message = 'Fields do not match'
 ): ValidationRule<T> => ({
-  validator: (value, values) => {
+  validator: (value: T[keyof T], values: T) => {
     return value === values[fieldName];
   },
   message,

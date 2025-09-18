@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { Plus, Package, Search, Trash2, Edit, Check, X } from 'lucide-react';
+import { Plus, Search, Trash2, Edit, Check } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
@@ -175,7 +175,7 @@ export default function InventoryPage() {
       <div className="flex justify-between items-center">
         <div>
           <h1 className="text-2xl font-bold">Inventory</h1>
-          <p className="text-muted-foreground">Manage your farm's inventory</p>
+          <p className="text-muted-foreground">Manage your farm&apos;s inventory</p>
         </div>
         <Button onClick={() => {
           setEditingId(null);

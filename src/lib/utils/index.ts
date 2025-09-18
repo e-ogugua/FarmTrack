@@ -25,8 +25,16 @@ export function generateId(): string {
          Math.random().toString(36).substring(2, 15);
 }
 
-export function calculateTotal(items: any[], field: string): number {
-  return items.reduce((sum, item) => sum + (Number(item[field]) || 0), 0);
+interface IndexableObject {
+  [key: string]: string | number | boolean | null | undefined;
+}
+
+export function calculateTotal<T extends IndexableObject>(items: T[], field: keyof T): number {
+  return items.reduce((sum, item) => {
+    const value = item[field];
+    const numValue = typeof value === 'number' ? value : Number(value);
+    return sum + (isNaN(numValue) ? 0 : numValue);
+  }, 0);
 }
 
 export function truncate(str: string, length: number): string {

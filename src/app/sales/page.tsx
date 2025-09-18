@@ -1,13 +1,12 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { Plus, DollarSign, Package, Calendar, Check, X, Search } from 'lucide-react';
+import { Plus, Check, Search } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { formatDate } from '@/lib/date-utils';
 import { storage } from '@/lib/utils/storage';
 
@@ -101,7 +100,7 @@ export default function SalesPage() {
       <div className="flex justify-between items-center">
         <div>
           <h1 className="text-2xl font-bold">Sales</h1>
-          <p className="text-muted-foreground">Manage your farm's sales records</p>
+          <p className="text-muted-foreground">Manage your farm&apos;s sales records</p>
         </div>
         <Button onClick={() => setIsFormOpen(true)}>
           <Plus className="mr-2 h-4 w-4" />

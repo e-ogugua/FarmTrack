@@ -5,7 +5,8 @@
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
+  --font-sans: var(--font-sans);
+  --font-serif: var(--font-serif);
   --font-mono: var(--font-geist-mono);
   --color-sidebar-ring: var(--sidebar-ring);
   --color-sidebar-border: var(--sidebar-border);
@@ -44,71 +45,108 @@
 
 :root {
   --radius: 0.625rem;
-  --background: oklch(1 0 0);
-  --foreground: oklch(0.145 0 0);
-  --card: oklch(1 0 0);
-  --card-foreground: oklch(0.145 0 0);
-  --popover: oklch(1 0 0);
-  --popover-foreground: oklch(0.145 0 0);
-  --primary: oklch(0.205 0 0);
-  --primary-foreground: oklch(0.985 0 0);
-  --secondary: oklch(0.97 0 0);
-  --secondary-foreground: oklch(0.205 0 0);
-  --muted: oklch(0.97 0 0);
-  --muted-foreground: oklch(0.556 0 0);
-  --accent: oklch(0.97 0 0);
-  --accent-foreground: oklch(0.205 0 0);
-  --destructive: oklch(0.577 0.245 27.325);
-  --border: oklch(0.922 0 0);
-  --input: oklch(0.922 0 0);
-  --ring: oklch(0.708 0 0);
-  --chart-1: oklch(0.646 0.222 41.116);
-  --chart-2: oklch(0.6 0.118 184.704);
-  --chart-3: oklch(0.398 0.07 227.392);
-  --chart-4: oklch(0.828 0.189 84.429);
-  --chart-5: oklch(0.769 0.188 70.08);
-  --sidebar: oklch(0.985 0 0);
-  --sidebar-foreground: oklch(0.145 0 0);
-  --sidebar-primary: oklch(0.205 0 0);
-  --sidebar-primary-foreground: oklch(0.985 0 0);
-  --sidebar-accent: oklch(0.97 0 0);
-  --sidebar-accent-foreground: oklch(0.205 0 0);
-  --sidebar-border: oklch(0.922 0 0);
-  --sidebar-ring: oklch(0.708 0 0);
+
+  /* FarmTrack Brand Colors - Professional Agricultural Theme */
+  --background: oklch(0.98 0.005 85); /* Warm off-white */
+  --foreground: oklch(0.15 0.01 85); /* Dark earth brown */
+
+  /* Primary Brand Colors */
+  --primary: oklch(0.45 0.12 135); /* Deep forest green */
+  --primary-foreground: oklch(0.98 0.005 85); /* Warm off-white */
+
+  /* Secondary Colors */
+  --secondary: oklch(0.65 0.08 45); /* Warm earth brown */
+  --secondary-foreground: oklch(0.98 0.005 85); /* Warm off-white */
+
+  /* Neutral Colors */
+  --muted: oklch(0.92 0.01 85); /* Light warm gray */
+  --muted-foreground: oklch(0.45 0.02 85); /* Medium earth tone */
+
+  /* Accent Colors */
+  --accent: oklch(0.75 0.15 110); /* Golden wheat yellow */
+  --accent-foreground: oklch(0.15 0.01 85); /* Dark earth brown */
+
+  /* Status Colors */
+  --destructive: oklch(0.55 0.22 25); /* Warm red for errors */
+  --destructive-foreground: oklch(0.98 0.005 85);
+
+  /* Border and Input Colors */
+  --border: oklch(0.88 0.01 85); /* Light earth border */
+  --input: oklch(0.95 0.01 85); /* Input background */
+  --ring: oklch(0.45 0.12 135); /* Focus ring in brand green */
+
+  /* Card Colors */
+  --card: oklch(1 0 0); /* Pure white cards */
+  --card-foreground: oklch(0.15 0.01 85); /* Dark text on cards */
+
+  /* Popover Colors */
+  --popover: oklch(1 0 0); /* White popover background */
+  --popover-foreground: oklch(0.15 0.01 85); /* Dark text on popover */
+
+  /* Chart Colors - Agricultural theme */
+  --chart-1: oklch(0.45 0.12 135); /* Primary green */
+  --chart-2: oklch(0.65 0.08 45); /* Earth brown */
+  --chart-3: oklch(0.75 0.15 110); /* Golden yellow */
+  --chart-4: oklch(0.35 0.15 160); /* Sky blue */
+  --chart-5: oklch(0.55 0.18 35); /* Warm orange */
+
+  /* Sidebar Colors */
+  --sidebar: oklch(0.95 0.01 85); /* Light sidebar background */
+  --sidebar-foreground: oklch(0.15 0.01 85); /* Dark sidebar text */
+  --sidebar-primary: oklch(0.45 0.12 135); /* Primary green */
+  --sidebar-primary-foreground: oklch(0.98 0.005 85); /* White text on primary */
+  --sidebar-accent: oklch(0.88 0.01 85); /* Sidebar accent */
+  --sidebar-accent-foreground: oklch(0.15 0.01 85); /* Dark accent text */
+  --sidebar-border: oklch(0.85 0.01 85); /* Sidebar border */
+  --sidebar-ring: oklch(0.45 0.12 135); /* Sidebar focus ring */
 }
 
 .dark {
-  --background: oklch(0.145 0 0);
-  --foreground: oklch(0.985 0 0);
-  --card: oklch(0.205 0 0);
-  --card-foreground: oklch(0.985 0 0);
-  --popover: oklch(0.205 0 0);
-  --popover-foreground: oklch(0.985 0 0);
-  --primary: oklch(0.922 0 0);
-  --primary-foreground: oklch(0.205 0 0);
-  --secondary: oklch(0.269 0 0);
-  --secondary-foreground: oklch(0.985 0 0);
-  --muted: oklch(0.269 0 0);
-  --muted-foreground: oklch(0.708 0 0);
-  --accent: oklch(0.269 0 0);
-  --accent-foreground: oklch(0.985 0 0);
-  --destructive: oklch(0.704 0.191 22.216);
-  --border: oklch(1 0 0 / 10%);
-  --input: oklch(1 0 0 / 15%);
-  --ring: oklch(0.556 0 0);
-  --chart-1: oklch(0.488 0.243 264.376);
-  --chart-2: oklch(0.696 0.17 162.48);
-  --chart-3: oklch(0.769 0.188 70.08);
-  --chart-4: oklch(0.627 0.265 303.9);
-  --chart-5: oklch(0.645 0.246 16.439);
-  --sidebar: oklch(0.205 0 0);
-  --sidebar-foreground: oklch(0.985 0 0);
-  --sidebar-primary: oklch(0.488 0.243 264.376);
-  --sidebar-primary-foreground: oklch(0.985 0 0);
-  --sidebar-accent: oklch(0.269 0 0);
-  --sidebar-accent-foreground: oklch(0.985 0 0);
-  --sidebar-border: oklch(1 0 0 / 10%);
-  --sidebar-ring: oklch(0.556 0 0);
+  /* Dark Mode - FarmTrack Professional Theme */
+  --background: oklch(0.12 0.02 85); /* Very dark earth brown */
+  --foreground: oklch(0.95 0.005 85); /* Light warm off-white */
+
+  --card: oklch(0.18 0.02 85); /* Dark card background */
+  --card-foreground: oklch(0.95 0.005 85); /* Light text on cards */
+
+  --popover: oklch(0.18 0.02 85); /* Dark popover background */
+  --popover-foreground: oklch(0.95 0.005 85); /* Light text on popover */
+
+  --primary: oklch(0.55 0.15 135); /* Brighter forest green for dark mode */
+  --primary-foreground: oklch(0.12 0.02 85); /* Dark earth for text on primary */
+
+  --secondary: oklch(0.75 0.10 45); /* Lighter earth brown for dark mode */
+  --secondary-foreground: oklch(0.12 0.02 85); /* Dark earth for text on secondary */
+
+  --muted: oklch(0.25 0.02 85); /* Dark muted background */
+  --muted-foreground: oklch(0.65 0.02 85); /* Medium light text */
+
+  --accent: oklch(0.80 0.18 110); /* Brighter golden yellow for dark mode */
+  --accent-foreground: oklch(0.12 0.02 85); /* Dark earth for text on accent */
+
+  --destructive: oklch(0.65 0.25 25); /* Brighter red for dark mode */
+  --destructive-foreground: oklch(0.95 0.005 85);
+
+  --border: oklch(0.30 0.02 85); /* Dark border */
+  --input: oklch(0.22 0.02 85); /* Dark input background */
+  --ring: oklch(0.55 0.15 135); /* Bright green focus ring */
+
+  /* Dark Mode Chart Colors */
+  --chart-1: oklch(0.55 0.15 135); /* Bright green */
+  --chart-2: oklch(0.75 0.10 45); /* Light earth brown */
+  --chart-3: oklch(0.80 0.18 110); /* Bright golden yellow */
+  --chart-4: oklch(0.45 0.18 160); /* Sky blue */
+  --chart-5: oklch(0.65 0.20 35); /* Warm orange */
+
+  /* Dark Mode Sidebar */
+  --sidebar: oklch(0.15 0.02 85); /* Dark sidebar background */
+  --sidebar-foreground: oklch(0.95 0.005 85); /* Light sidebar text */
+  --sidebar-primary: oklch(0.55 0.15 135); /* Bright green primary */
+  --sidebar-primary-foreground: oklch(0.12 0.02 85); /* Dark text on primary */
+  --sidebar-accent: oklch(0.25 0.02 85); /* Dark sidebar accent */
+  --sidebar-accent-foreground: oklch(0.95 0.005 85); /* Light accent text */
+  --sidebar-border: oklch(0.30 0.02 85); /* Dark sidebar border */
+  --sidebar-ring: oklch(0.55 0.15 135); /* Bright green focus ring */
 }
 
 @layer base {

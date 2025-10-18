@@ -3,7 +3,7 @@ import { useCallback, useState, useEffect } from 'react';
 // Check if we're in a browser environment
 const isBrowser = typeof window !== 'undefined' && typeof window.indexedDB !== 'undefined';
 
-type StoreName = 'activities' | 'inventory' | 'sales' | 'expenses' | 'labour';
+type StoreName = 'activities' | 'inventory' | 'sales' | 'expenses' | 'labour' | 'weather' | 'tax-records';
 
 interface UseIndexedDBReturn {
   db: IDBDatabase | null;
@@ -76,7 +76,7 @@ export function useIndexedDB({
         request.onupgradeneeded = (event) => {
           const db = (event.target as IDBOpenDBRequest).result;
           // Create object stores if they don't exist
-          const storeNames: StoreName[] = ['activities', 'inventory', 'sales', 'expenses', 'labour'];
+          const storeNames: StoreName[] = ['activities', 'inventory', 'sales', 'expenses', 'labour', 'weather', 'tax-records'];
           storeNames.forEach(storeName => {
             if (!db.objectStoreNames.contains(storeName)) {
               db.createObjectStore(storeName, { keyPath: 'id', autoIncrement: true });

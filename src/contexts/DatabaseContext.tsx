@@ -1,7 +1,7 @@
 import { createContext, useContext, ReactNode } from 'react';
 import { useIndexedDB } from '@/hooks/use-indexed-db';
 
-type StoreName = 'activities' | 'inventory' | 'sales' | 'expenses' | 'labour';
+type StoreName = 'activities' | 'inventory' | 'sales' | 'expenses' | 'labour' | 'weather' | 'tax-records';
 
 interface DatabaseContextType {
   db: IDBDatabase | null;

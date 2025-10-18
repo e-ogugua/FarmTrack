@@ -1,12 +1,20 @@
 {
-  "name": "FarmTrack",
+  "name": "FarmTrack - Professional Farm Management",
   "short_name": "FarmTrack",
-  "description": "Farm Records Management Application",
-  "start_url": "/",
+  "description": "Comprehensive farm records management system for modern agricultural operations. Track activities, manage inventory, monitor finances, and optimize productivity.",
+  "start_url": "/dashboard",
   "display": "standalone",
-  "background_color": "#ffffff",
-  "theme_color": "#10B981",
+  "background_color": "#f5f7f0",
+  "theme_color": "#4a5d3a",
+  "orientation": "portrait-primary",
+  "categories": ["business", "productivity", "utilities"],
   "icons": [
+    {
+      "src": "/favicon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    },
     {
       "src": "/android-chrome-192x192.png",
       "sizes": "192x192",

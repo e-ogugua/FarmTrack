@@ -5,7 +5,9 @@ import {
   Package, 
   BarChart2,
   ShoppingBag,
-  FileText
+  FileText,
+  Cloud,
+  Calculator
 } from 'lucide-react';
 import { ComponentType } from 'react';
 
@@ -66,6 +68,20 @@ export const NAV_ITEMS: NavItem[] = [
     icon: Package,
     description: 'Manage farm inventory and supplies',
     roles: ['admin', 'manager', 'inventory']
+  },
+  { 
+    name: 'Weather', 
+    href: '/weather', 
+    icon: Cloud,
+    description: 'Weather forecasts for farm planning',
+    roles: ['admin', 'manager', 'worker']
+  },
+  { 
+    name: 'Tax Manager', 
+    href: '/tax-manager', 
+    icon: Calculator,
+    description: 'Tax calculations and records',
+    roles: ['admin', 'manager']
   },
   { 
     name: 'Reports', 

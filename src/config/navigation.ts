@@ -27,67 +27,67 @@ export interface NavItem {
  * Array of navigation items used throughout the application
  */
 export const NAV_ITEMS: NavItem[] = [
-  { 
-    name: 'Dashboard', 
-    href: '/dashboard', 
+  {
+    name: 'Dashboard',
+    href: '/dashboard',
     icon: Home,
-    description: 'Overview of your farm operations',
+    description: 'System overview and operational metrics',
     roles: ['admin', 'manager', 'worker']
   },
-  { 
-    name: 'Activities', 
-    href: '/activities', 
+  {
+    name: 'Activities',
+    href: '/activities',
     icon: Activity,
-    description: 'Manage farm activities and tasks',
+    description: 'Agricultural activity logging and tracking',
     roles: ['admin', 'manager', 'worker']
   },
-  { 
-    name: 'Labour', 
-    href: '/labour', 
+  {
+    name: 'Labour',
+    href: '/labour',
     icon: Users,
-    description: 'Track labor and workforce management',
+    description: 'Workforce management and labor tracking',
     roles: ['admin', 'manager']
   },
-  { 
-    name: 'Expenses', 
-    href: '/expenses', 
+  {
+    name: 'Expenses',
+    href: '/expenses',
     icon: FileText,
-    description: 'Record and manage farm expenses',
+    description: 'Expense recording and financial tracking',
     roles: ['admin', 'manager']
   },
-  { 
-    name: 'Sales', 
-    href: '/sales', 
+  {
+    name: 'Sales',
+    href: '/sales',
     icon: ShoppingBag,
-    description: 'Track sales and revenue',
+    description: 'Revenue tracking and sales management',
     roles: ['admin', 'manager', 'sales']
   },
-  { 
-    name: 'Inventory', 
-    href: '/inventory', 
+  {
+    name: 'Inventory',
+    href: '/inventory',
     icon: Package,
-    description: 'Manage farm inventory and supplies',
+    description: 'Inventory control and supply management',
     roles: ['admin', 'manager', 'inventory']
   },
-  { 
-    name: 'Weather', 
-    href: '/weather', 
+  {
+    name: 'Weather',
+    href: '/weather',
     icon: Cloud,
-    description: 'Weather forecasts for farm planning',
+    description: 'Weather data for operational planning',
     roles: ['admin', 'manager', 'worker']
   },
-  { 
-    name: 'Tax Manager', 
-    href: '/tax-manager', 
+  {
+    name: 'Tax Manager',
+    href: '/tax-manager',
     icon: Calculator,
-    description: 'Tax calculations and records',
+    description: 'Tax calculations and compliance records',
     roles: ['admin', 'manager']
   },
-  { 
-    name: 'Reports', 
-    href: '/reports', 
+  {
+    name: 'Reports',
+    href: '/reports',
     icon: BarChart2,
-    description: 'View reports and analytics',
+    description: 'Data analysis and reporting tools',
     roles: ['admin', 'manager']
   }
 ];

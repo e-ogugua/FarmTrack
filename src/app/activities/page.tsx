@@ -49,25 +49,25 @@ export default function ActivitiesPage() {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     const newActivity: Activity = {
       id: crypto.randomUUID(),
       ...formData,
       createdAt: new Date().toISOString()
     };
-    
+
     const updatedActivities = [newActivity, ...activities];
     setActivities(updatedActivities);
     storage.set('activities', updatedActivities);
-    
+
     // Reset form
-    setFormData({ 
+    setFormData({
       date: new Date().toISOString().split('T')[0],
       activityType: '',
       crop: '',
       notes: ''
     });
-    
+
     setIsFormOpen(false);
   };
 
@@ -79,21 +79,21 @@ export default function ActivitiesPage() {
     <div className="space-y-6">
       <div className="flex justify-between items-center">
         <div>
-          <h1 className="text-3xl font-bold">Farm Activities</h1>
+          <h1 className="text-3xl font-bold" data-testid="activities-title">Activity Management</h1>
           <p className="text-sm text-muted-foreground">
-            Track and manage all your farm activities in one place. Click &quot;Add Activity&quot; to get started.
+            Track and manage agricultural activities. Click &quot;Add Activity&quot; to create new record.
           </p>
         </div>
         <Button onClick={() => setIsFormOpen(true)}>
           <Plus className="mr-2 h-4 w-4" /> Add Activity
         </Button>
       </div>
-      
+
       {isFormOpen && (
         <Card>
           <CardHeader>
             <CardTitle>Add New Activity</CardTitle>
-            <CardDescription>Record a new farm activity</CardDescription>
+            <CardDescription>Record agricultural activity data</CardDescription>
           </CardHeader>
           <CardContent>
             <form onSubmit={handleSubmit} className="space-y-4">
@@ -113,11 +113,11 @@ export default function ActivitiesPage() {
                     />
                   </div>
                 </div>
-                
+
                 <div className="space-y-2">
                   <Label htmlFor="activityType">Activity Type</Label>
-                  <Select 
-                    value={formData.activityType} 
+                  <Select
+                    value={formData.activityType}
                     onValueChange={(value) => setFormData({...formData, activityType: value})}
                     required
                   >
@@ -134,7 +134,7 @@ export default function ActivitiesPage() {
                     </SelectContent>
                   </Select>
                 </div>
-                
+
                 <div className="space-y-2">
                   <Label htmlFor="crop">Crop</Label>
                   <Input
@@ -146,7 +146,7 @@ export default function ActivitiesPage() {
                     required
                   />
                 </div>
-                
+
                 <div className="space-y-2">
                   <Label htmlFor="notes">Notes</Label>
                   <Textarea
@@ -159,11 +159,11 @@ export default function ActivitiesPage() {
                   />
                 </div>
               </div>
-              
+
               <div className="flex justify-end space-x-2 pt-2">
-                <Button 
-                  type="button" 
-                  variant="outline" 
+                <Button
+                  type="button"
+                  variant="outline"
                   onClick={() => setIsFormOpen(false)}
                 >
                   <X className="mr-2 h-4 w-4" /> Cancel
@@ -176,16 +176,16 @@ export default function ActivitiesPage() {
           </CardContent>
         </Card>
       )}
-      
+
       <div className="space-y-4">
         <h2 className="text-2xl font-semibold">Recent Activities</h2>
-        
+
         {activities.length === 0 ? (
           <Card>
             <CardContent className="pt-6 text-center text-muted-foreground">
               <Activity className="mx-auto h-12 w-12 text-gray-300 mb-2" />
               <p>No activities recorded yet.</p>
-              <p className="text-sm">Click the &quot;Add Activity&quot; button to get started.</p>
+              <p className="text-sm">Click the &quot;Add Activity&quot; button to create first record.</p>
             </CardContent>
           </Card>
         ) : (

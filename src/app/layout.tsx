@@ -9,33 +9,37 @@ import Navbar from "@/components/layout/Navbar";
 const inter = Inter({
   subsets: ["latin"],
   variable: "--font-sans",
-  display: "swap"
+  display: "swap",
+  preload: true
 });
 
 const playfair = Playfair_Display({
   subsets: ["latin"],
   variable: "--font-serif",
-  display: "swap"
+  display: "swap",
+  preload: true
 });
 
 export const viewport: Viewport = {
   width: 'device-width',
   initialScale: 1,
-  maximumScale: 1,
-  userScalable: false,
+  maximumScale: 5,
+  userScalable: true,
   themeColor: [
     { media: "(prefers-color-scheme: light)", color: "#4a5d3a" }, // Forest green
     { media: "(prefers-color-scheme: dark)", color: "#2d3d2d" },  // Dark forest green
   ],
+  viewportFit: 'cover',
+  colorScheme: 'light dark'
 };
 
 export const metadata: Metadata = {
-  title: "FarmTrack - Professional Farm Management",
-  description: "Comprehensive farm records management system for modern agricultural operations. Track activities, manage inventory, monitor finances, and optimize productivity.",
+  title: "FarmTrack – An EmmanuelOS Agricultural Module",
+  description: "Agricultural management system for activity tracking, inventory control, financial monitoring, and operational data analysis.",
   keywords: ["farm management", "agriculture", "record keeping", "inventory", "financial tracking", "productivity"],
-  authors: [{ name: "FarmTrack Team" }],
-  creator: "FarmTrack",
-  publisher: "FarmTrack",
+  authors: [{ name: "CEO – Chukwuka Emmanuel Ogugua" }],
+  creator: "FarmTrack – An EmmanuelOS Agricultural Module",
+  publisher: "EmmanuelOS",
   formatDetection: {
     email: false,
     address: false,
@@ -44,20 +48,18 @@ export const metadata: Metadata = {
   icons: {
     icon: [
       { url: '/favicon.ico', sizes: 'any' },
-      { url: '/favicon-16x16.png', sizes: '16x16', type: 'image/png' },
-      { url: '/favicon-32x32.png', sizes: '32x32', type: 'image/png' },
     ],
     apple: [
-      { url: '/apple-touch-icon.png', sizes: '180x180', type: 'image/png' },
+      { url: '/logo.svg', sizes: 'any', type: 'image/svg+xml' },
     ],
     other: [
-      { rel: 'mask-icon', url: '/safari-pinned-tab.svg', color: '#4a5d3a' },
+      { rel: 'mask-icon', url: '/favicon.svg', color: '#4a5d3a' },
     ],
   },
   manifest: "/site.webmanifest",
   openGraph: {
-    title: "FarmTrack - Professional Farm Management",
-    description: "Comprehensive farm records management system for modern agricultural operations",
+    title: "FarmTrack – An EmmanuelOS Agricultural Module",
+    description: "Agricultural management system for activity tracking, inventory control, financial monitoring, and operational data analysis",
     url: "https://farm-track-gamma.vercel.app",
     siteName: "FarmTrack",
     locale: "en_US",
@@ -65,9 +67,9 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: "summary_large_image",
-    title: "FarmTrack - Professional Farm Management",
-    description: "Comprehensive farm records management system for modern agricultural operations",
-    creator: "@farmtrack",
+    title: "FarmTrack – An EmmanuelOS Agricultural Module",
+    description: "Agricultural management system for activity tracking, inventory control, financial monitoring, and operational data analysis",
+    creator: "@emmanuelos",
   },
   robots: {
     index: true,
@@ -88,19 +90,41 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className="h-full" suppressHydrationWarning>
-      <body className={`${inter.variable} ${playfair.variable} font-sans min-h-screen flex flex-col bg-background`}>
+    <html
+      lang="en"
+      className={`${inter.variable} ${playfair.variable} h-full`}
+      suppressHydrationWarning
+    >
+      <body className="font-sans min-h-screen flex flex-col bg-background text-foreground antialiased">
         <AppProviders>
           <ErrorBoundary>
+            {/* Skip link for accessibility */}
+            <a
+              href="#main-content"
+              className="skip-link"
+              aria-label="Skip to main content"
+            >
+              Skip to main content
+            </a>
+
             <div className="min-h-screen flex flex-col">
               <Navbar />
-              <main className="flex-1">
+              <main
+                id="main-content"
+                className="flex-1 focus:outline-none"
+                role="main"
+                aria-label="Main content"
+              >
                 {children}
               </main>
-              <footer className="bg-background border-t">
-                <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
-                  <p className="text-center text-sm text-muted-foreground">
-                    &copy; {new Date().getFullYear()} FarmTrack. All rights reserved.
+              <footer
+                className="bg-background border-t border-border mt-auto"
+                role="contentinfo"
+                aria-label="Site footer"
+              >
+                <div className="container-wide py-6">
+                  <p className="text-center text-responsive-sm text-muted-foreground">
+                    &copy; {new Date().getFullYear()} FarmTrack – An EmmanuelOS Agricultural Module. All rights reserved.
                   </p>
                 </div>
               </footer>

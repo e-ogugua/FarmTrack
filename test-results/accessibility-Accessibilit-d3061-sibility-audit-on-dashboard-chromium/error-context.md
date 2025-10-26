@@ -1,0 +1,137 @@
+# Page snapshot
+
+```yaml
+- generic [active] [ref=e1]:
+  - link "Skip to main content" [ref=e2] [cursor=pointer]:
+    - /url: "#main-content"
+  - generic [ref=e3]:
+    - navigation "Main navigation" [ref=e4]:
+      - generic [ref=e6]:
+        - link "FarmTrack home" [ref=e8] [cursor=pointer]:
+          - /url: /dashboard/
+          - img [ref=e10]
+          - generic [ref=e13]: FarmTrack
+        - generic [ref=e14]:
+          - menuitem "Dashboard" [ref=e15] [cursor=pointer]:
+            - img [ref=e16]
+            - generic [ref=e19]: Dashboard
+          - menuitem "Activities" [ref=e20] [cursor=pointer]:
+            - img [ref=e21]
+            - generic [ref=e23]: Activities
+          - menuitem "Labour" [ref=e24] [cursor=pointer]:
+            - img [ref=e25]
+            - generic [ref=e30]: Labour
+          - menuitem "Expenses" [ref=e31] [cursor=pointer]:
+            - img [ref=e32]
+            - generic [ref=e35]: Expenses
+          - menuitem "Sales" [ref=e36] [cursor=pointer]:
+            - img [ref=e37]
+            - generic [ref=e40]: Sales
+          - menuitem "Inventory" [ref=e41] [cursor=pointer]:
+            - img [ref=e42]
+            - generic [ref=e46]: Inventory
+          - menuitem "Weather" [ref=e47] [cursor=pointer]:
+            - img [ref=e48]
+            - generic [ref=e50]: Weather
+          - menuitem "Tax Manager" [ref=e51] [cursor=pointer]:
+            - img [ref=e52]
+            - generic [ref=e54]: Tax Manager
+          - menuitem "Reports" [ref=e55] [cursor=pointer]:
+            - img [ref=e56]
+            - generic [ref=e57]: Reports
+    - main "Main content" [ref=e58]:
+      - generic [ref=e59]:
+        - generic [ref=e60]:
+          - heading "Farm Dashboard" [level=1] [ref=e61]
+          - paragraph [ref=e62]: Monitor your agricultural operations, track performance metrics, and manage your farm efficiently
+        - generic [ref=e63]:
+          - generic [ref=e65]:
+            - generic [ref=e66]:
+              - heading "Total Revenue" [level=3] [ref=e67]
+              - img [ref=e69]
+            - generic [ref=e71]:
+              - generic [ref=e72]: $0
+              - paragraph [ref=e73]: +20.1% from last month
+          - generic [ref=e75]:
+            - generic [ref=e76]:
+              - heading "Total Expenses" [level=3] [ref=e77]
+              - img [ref=e79]
+            - generic [ref=e82]:
+              - generic [ref=e83]: $0
+              - paragraph [ref=e84]: +5.2% from last month
+          - generic [ref=e86]:
+            - generic [ref=e87]:
+              - heading "Net Profit" [level=3] [ref=e88]
+              - img [ref=e90]
+            - generic [ref=e93]:
+              - generic [ref=e94]: +$0
+              - paragraph [ref=e95]: Profit this period
+          - generic [ref=e97]:
+            - generic [ref=e98]:
+              - heading "Inventory Items" [level=3] [ref=e99]
+              - img [ref=e101]
+            - generic [ref=e105]:
+              - generic [ref=e106]: "0"
+              - paragraph [ref=e107]: Items in stock
+        - generic [ref=e108]:
+          - generic [ref=e110]:
+            - heading "Weather Conditions" [level=3] [ref=e112]:
+              - img [ref=e114]
+              - text: Weather Conditions
+            - paragraph [ref=e117]: No weather data available. Enable location services for accurate forecasts.
+          - generic [ref=e119]:
+            - heading "Tax Overview" [level=3] [ref=e121]:
+              - img [ref=e123]
+              - text: Tax Overview
+            - generic [ref=e126]:
+              - generic [ref=e127]:
+                - text: "Taxable Income:"
+                - generic [ref=e128]: $0
+              - generic [ref=e129]:
+                - text: "Estimated Tax:"
+                - generic [ref=e130]: $0
+              - paragraph [ref=e131]: Based on current year financial data
+          - generic [ref=e133]:
+            - heading "Farm Health" [level=3] [ref=e135]:
+              - img [ref=e137]
+              - text: Farm Health
+            - generic [ref=e141]:
+              - 'generic "Farm systems status: All operational" [ref=e142]': All Systems Operational
+              - paragraph [ref=e143]: System status normal • All sensors reporting healthy data
+              - generic [ref=e144]: "Last updated: 6:26:57 AM"
+        - generic [ref=e146]:
+          - generic [ref=e148]:
+            - heading "Recent Activities" [level=3] [ref=e150]:
+              - img [ref=e151]
+              - text: Recent Activities
+            - generic [ref=e154]:
+              - generic [ref=e157]:
+                - paragraph [ref=e158]: No recent activities
+                - paragraph [ref=e159]: Activities will appear here as you use the system
+              - paragraph [ref=e160]: Track your daily farm operations and tasks in real-time
+          - generic [ref=e162]:
+            - heading "Recent Sales" [level=3] [ref=e164]:
+              - img [ref=e165]
+              - text: Recent Sales
+            - generic [ref=e168]:
+              - generic [ref=e171]:
+                - paragraph [ref=e172]: No recent sales
+                - paragraph [ref=e173]: Sales records will appear here after transactions
+              - paragraph [ref=e174]: Monitor your sales performance and customer trends
+    - contentinfo "Site footer" [ref=e175]:
+      - paragraph [ref=e177]: © 2025 FarmTrack – An EmmanuelOS Agricultural Module. All rights reserved.
+  - generic [ref=e182] [cursor=pointer]:
+    - button "Open Next.js Dev Tools" [ref=e183]:
+      - img [ref=e184]
+    - generic [ref=e187]:
+      - button "Open issues overlay" [ref=e188]:
+        - generic [ref=e189]:
+          - generic [ref=e190]: "2"
+          - generic [ref=e191]: "3"
+        - generic [ref=e192]:
+          - text: Issue
+          - generic [ref=e193]: s
+      - button "Collapse issues badge" [ref=e194]:
+        - img [ref=e195]
+  - alert [ref=e197]
+```
